@@ -1,0 +1,100 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { questions } from '../../data/questions';
+
+const categories = [...new Set(questions.map(q => q.category))];
+---
+
+<Layout title="All Categories">
+  <div class="container">
+    <h1>All Categories</h1>
+    
+    <div class="category-grid">
+      {categories.map(category => (
+        <a href={`/category/${category.toLowerCase()}`} class="category-card">
+          <h2>{category}</h2>
+          <span class="count">
+            {questions.filter(q => q.category === category).length} Questions
+          </span>
+        </a>
+      ))}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  h1 {
+    margin-bottom: 2rem;
+    color: #2d3748;
+    font-size: 2.5rem;
+    text-align: left;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .category-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .category-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .category-card h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    color: #2d3748;
+  }
+
+  .count {
+    display: block;
+    margin-top: 0.75rem;
+    font-size: 1.125rem;
+    color: #718096;
+  }
+
+  @media (max-width: 768px) {
+    .category-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .container {
+      padding: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    .category-card {
+      padding: 2rem;
+    }
+
+    .category-card h2 {
+      font-size: 1.5rem;
+    }
+
+    .count {
+      font-size: 1rem;
+    }
+  }
+</style>

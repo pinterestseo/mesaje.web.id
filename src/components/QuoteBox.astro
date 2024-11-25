@@ -1,0 +1,39 @@
+---
+interface Props {
+  text: string;
+  source?: string;
+}
+
+const { text, source } = Astro.props;
+---
+
+<blockquote class="quote-box">
+  <p>{text}</p>
+  {source && <cite>Source: {source}</cite>}
+</blockquote>
+
+<style>
+  .quote-box {
+    background: #ffffff;
+    border-left: 4px solid #3182ce;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .quote-box p {
+    margin: 0;
+    color: #2d3748;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .quote-box cite {
+    display: block;
+    margin-top: 1rem;
+    color: #718096;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+</style>

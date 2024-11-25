@@ -1,0 +1,240 @@
+---
+import Layout from './Layout.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import SEOHead from '../components/SEOHead.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  headings: {
+    depth: number;
+    slug: string;
+    text: string;
+  }[];
+  publishDate?: string;
+  modifiedDate?: string;
+  author?: {
+    name: string;
+    url?: string;
+  };
+  image?: string;  // Tambahkan properti image
+}
+
+const { 
+  title, 
+  description, 
+  headings,
+  publishDate = new Date().toISOString(),
+  modifiedDate,
+  author = {
+    name: "People Also Ask",
+    url: "https://peoplealsoask.com/about"
+  },
+  image = '/article-default.jpg'  // Default image jika tidak ada
+} = Astro.props;
+
+const articleSchema = {
+  headline: title,
+  description: description,
+  author: {
+    '@type': 'Person',
+    name: author.name,
+    url: author.url
+  },
+  datePublished: publishDate,
+  dateModified: modifiedDate || publishDate,
+  image: image,  // Gunakan image dari props
+  publisher: {
+    '@type': 'Organization',
+    name: 'People Also Ask',
+    logo: {
+      '@type': 'ImageObject',
+      url: '/logo.png'
+    }
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': Astro.url.href
+  }
+};
+---
+
+<Layout>
+  <SEOHead
+    title={title}
+    description={description}
+    type="article"
+    publishDate={publishDate}
+    modifiedDate={modifiedDate}
+    image={image}
+  />
+  
+  <JsonLd type="Article" data={articleSchema} />
+
+  <main class="article-container">
+    <article class="content">
+      <header class="article-header">
+        <h1>{title}</h1>
+        <p class="description">{description}</p>
+        <div class="article-meta">
+          {author && (
+            <span class="author">By {author.name}</span>
+          )}
+          <time datetime={publishDate}>
+            {new Date(publishDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </time>
+          {modifiedDate && (
+            <span class="updated">
+              Updated: {new Date(modifiedDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </span>
+          )}
+        </div>
+      </header>
+
+      <TableOfContents headings={headings} />
+      
+      <div class="article-content">
+        <slot />
+      </div>
+
+      <footer class="article-footer">
+        <div class="share-buttons">
+          <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(Astro.url.href)}&text=${encodeURIComponent(title)}`}
+             target="_blank"
+             rel="noopener noreferrer"
+             class="share-button twitter">
+            Share on Twitter
+          </a>
+          <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(Astro.url.href)}&title=${encodeURIComponent(title)}`}
+             target="_blank"
+             rel="noopener noreferrer"
+             class="share-button linkedin">
+            Share on LinkedIn
+          </a>
+        </div>
+      </footer>
+    </article>
+
+    <aside class="related-articles">
+      <h2>Related Articles</h2>
+      <slot name="related" />
+    </aside>
+  </main>
+</Layout>
+
+<style>
+  .article-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .article-header {
+    margin-bottom: 2rem;
+  }
+
+  h1 {
+    color: #1a202c;
+    font-size: 2.25rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .description {
+    color: #4a5568;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .article-meta {
+    display: flex;
+    gap: 1rem;
+    color: #718096;
+    font-size: 0.875rem;
+  }
+
+  .article-content {
+    color: #2d3748;
+    line-height: 1.8;
+  }
+
+  .article-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .share-button {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    text-decoration: none;
+    color: white;
+    font-size: 0.875rem;
+    transition: opacity 0.2s;
+  }
+
+  .share-button:hover {
+    opacity: 0.9;
+  }
+
+  .twitter {
+    background: #1DA1F2;
+  }
+
+  .linkedin {
+    background: #0077B5;
+  }
+
+  .related-articles {
+    margin-top: 3rem;
+  }
+
+  .related-articles h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #2d3748;
+  }
+
+  :global(.article-content h2) {
+    color: #2d3748;
+    font-size: 1.8rem;
+    margin: 2rem 0 1rem;
+    scroll-margin-top: 2rem;
+  }
+
+  :global(.article-content h3) {
+    color: #4a5568;
+    font-size: 1.5rem;
+    margin: 1.5rem 0 1rem;
+    scroll-margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .article-meta {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+</style>

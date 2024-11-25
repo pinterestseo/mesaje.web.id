@@ -1,0 +1,123 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { questions } from '../../data/questions';
+
+export async function getStaticPaths() {
+  const categories = [...new Set(questions.map(q => q.category))];
+  
+  return categories.map(category => ({
+    params: { category: category.toLowerCase() },
+    props: { 
+      category,
+      questions: questions.filter(q => q.category === category)
+    }
+  }));
+}
+
+const { category, questions: categoryQuestions } = Astro.props;
+
+// Buat array path untuk breadcrumb tanpa "category"
+const paths = [
+  { title: 'Home', path: '/' },
+  { title: category, path: `/category/${category.toLowerCase()}` }
+];
+---
+
+<Layout title={`${category} Questions`}>
+  <main>
+    <!-- Gunakan array paths yang baru -->
+    <Breadcrumbs paths={paths} />
+
+    <div class="container">
+      <h1 class="category-title">
+        {category} Questions
+      </h1>
+
+      <div class="question-grid">
+        {categoryQuestions.map(question => (
+          <article class="question-card">
+            <div class="question-content">
+              <span class="category-label">{question.category}</span>
+              <h3>
+                <a href={`/question/${question.slug}`}>{question.title}</a>
+              </h3>
+              <p>{question.description}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .category-title {
+    margin: 2rem 0;
+    font-size: 2rem;
+    color: #2d3748;
+  }
+
+  .question-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .question-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+
+  .question-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .question-content {
+    padding: 1.5rem;
+  }
+
+  .category-label {
+    background: #e2e8f0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    color: #4a5568;
+  }
+
+  .question-content h3 {
+    margin: 1rem 0;
+    font-size: 1.25rem;
+  }
+
+  .question-content h3 a {
+    color: #2d3748;
+    text-decoration: none;
+  }
+
+  .question-content h3 a:hover {
+    color: #8b5cf6;
+  }
+
+  .question-content p {
+    color: #4a5568;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .question-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
