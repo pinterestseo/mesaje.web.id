@@ -1,18 +1,17 @@
 import rss from '@astrojs/rss';
+import { questions } from '../data/questions';
 
 export async function GET(context) {
-  const postImportResult = import.meta.glob('./question/*.astro', { eager: true });
-  const posts = Object.values(postImportResult);
-
   return rss({
-    title: 'People Also Ask',
-    description: 'Find answers to your most pressing questions',
+    title: 'Whispered Messages',
+    description: 'Gentle words that touch hearts & heal minds',
     site: context.site,
-    items: posts.map((post) => ({
-      title: post.frontmatter.title,
-      pubDate: post.frontmatter.publishDate,
-      description: post.frontmatter.description,
-      link: `/question/${post.frontmatter.slug}/`,
+    items: questions.map((question) => ({
+      title: question.title,
+      description: question.description,
+      // Buat tanggal dari ID atau gunakan tanggal tetap
+      pubDate: new Date(question.id) || new Date(),
+      link: `/question/${question.slug}/`,
     })),
   });
 }
