@@ -5,4 +5,9 @@ node internalLinking.js
 node updateArticles.js 
 
 3. Untuk Running Blog Astro
-npm start      
+npm start
+
+4. Untuk Upload Project Ke Github
+git add .
+git commit -m "updatepost1"
+git push origin main 

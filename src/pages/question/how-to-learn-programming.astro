@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+const headings = [
+  {
+    "depth": 2,
+    "slug": "how-to-learn-programming",
+    "text": "how to learn programming"
+  }
+];
+---
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "how to learn programming",
+  "image": {
+    "@type": "ImageObject",
+    "url": "https://yourdomain.com/images/articles/thanksgiving/how-to-learn-programming.png",
+    "height": 400,
+    "width": 735,
+    "caption": "how to learn programming"
+  }
+};
+
+<JsonLd type="Article" data={articleSchema} />
+
+<ArticleLayout
+  title="how to learn programming"
+  description="Comprehensive guide about how to learn programming"
+  headings={headings}
+  image="/images/articles/thanksgiving/how-to-learn-programming.png"
+>
+  <h1>how to learn programming</h1>
+
+  <div class="article-image">
+    <Image 
+      src="/images/articles/thanksgiving/how-to-learn-programming.png"
+      alt="how to learn programming"
+      width={735}
+      height={400}
+      class="hero-image"
+    />
+  </div>
+
+  <!-- Content -->
+</ArticleLayout>
