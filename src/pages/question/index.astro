@@ -1,37 +1,24 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { questions } from '../data/questions';
-
-const categories = [...new Set(questions.map(q => q.category))];
+import Layout from '../../layouts/Layout.astro';
+import { questions } from '../../data/questions';
 
 // Pagination Logic
 const POSTS_PER_PAGE = 10;
+const currentPage = 1;
 const paginatedQuestions = questions.slice(0, POSTS_PER_PAGE);
 const totalPages = Math.ceil(questions.length / POSTS_PER_PAGE);
 ---
 
-<Layout title="Home">
+<Layout title="All Questions">
   <main>
     <header class="hero">
       <div class="container">
-        <h1>Whispered Messages</h1>
-        <p class="subtitle">Gentle words that touch hearts & heal minds</p>
+        <h1>All Questions</h1>
+        <p class="subtitle">Browse our comprehensive collection of articles</p>
       </div>
     </header>
 
-    <section class="categories container">
-      <h2>Browse by Category</h2>
-      <div class="category-list">
-        {categories.map(category => (
-          <a href={`/category/${category.toLowerCase()}`} class="category-tag">
-            {category}
-          </a>
-        ))}
-      </div>
-    </section>
-
     <section class="questions container">
-      <h2>Popular Questions</h2>
       <div class="question-grid">
         {paginatedQuestions.map(question => (
           <article class="question-card">
@@ -49,11 +36,11 @@ const totalPages = Math.ceil(questions.length / POSTS_PER_PAGE);
       <!-- Pagination Controls -->
       <nav class="pagination">
         <span class="page-info">
-          Page 1 of {totalPages}
+          Page {currentPage} of {totalPages}
         </span>
         
         {totalPages > 1 && (
-          <a href="/page/2" class="page-link">
+          <a href="/question/page/2" class="page-link">
             Next →
           </a>
         )}
@@ -85,31 +72,6 @@ const totalPages = Math.ceil(questions.length / POSTS_PER_PAGE);
     max-width: 900px;
     margin: 0 auto;
     padding: 0 1rem;
-  }
-
-  .categories {
-    margin-bottom: 3rem;
-  }
-
-  .category-list {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-  }
-
-  .category-tag {
-    background: #e2e8f0;
-    padding: 0.5rem 1rem;
-    border-radius: 9999px;
-    color: #2d3748;
-    text-decoration: none;
-    transition: all 0.2s;
-  }
-
-  .category-tag:hover {
-    background: #cbd5e0;
-    transform: translateY(-1px);
   }
 
   .question-grid {

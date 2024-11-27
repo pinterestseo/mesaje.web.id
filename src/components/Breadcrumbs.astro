@@ -13,7 +13,12 @@ const pathSegments = currentPage.split('/').filter(Boolean);
 const breadcrumbItems = pathSegments.map((segment, index) => {
   const url = '/' + pathSegments.slice(0, index + 1).join('/');
   return {
-    text: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
+    text: decodeURIComponent(segment)
+      .charAt(0)
+      .toUpperCase() + 
+      decodeURIComponent(segment)
+      .slice(1)
+      .replace(/-/g, ' '),
     url,
     isLast: index === pathSegments.length - 1
   };

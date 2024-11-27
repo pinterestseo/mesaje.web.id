@@ -10,20 +10,14 @@ const ARTICLES_DIR = path.join(__dirname, 'src/pages/question');
 
 async function updateArticle(filePath) {
   try {
-    // Skip index.astro dan files dalam folder page/
-    const fileName = path.basename(filePath);
-    if (fileName === 'index.astro' || filePath.includes('page/')) {
-      console.log(`Skipping: ${filePath}`);
-      return;
-    }
-
     let content = await fs.readFile(filePath, 'utf-8');
-    const fileNameWithoutExt = path.basename(filePath, '.astro');
+    const fileName = path.basename(filePath, '.astro');
     
-    // Sisa kode tetap sama
+    // Ekstrak h1 untuk alt text
     const h1Match = content.match(/<h1>(.*?)<\/h1>/);
-    const altText = h1Match ? h1Match[1] : fileNameWithoutExt.split('-').join(' ');
+    const altText = h1Match ? h1Match[1] : fileName.split('-').join(' ');
     
+    // Tambahkan import Image jika belum ada
     if (!content.includes("import { Image } from 'astro:assets'")) {
       content = content.replace(
         /import ArticleLayout/,
@@ -31,17 +25,19 @@ async function updateArticle(filePath) {
       );
     }
     
+    // Tambahkan properti image ke ArticleLayout
     if (!content.includes('image=')) {
       content = content.replace(
         /headings={headings}/,
-        `headings={headings}\n  image="/images/articles/thanksgiving/${fileNameWithoutExt}.png"`
+        `headings={headings}\n  image="/images/articles/thanksgiving/${fileName}.png"`
       );
     }
     
+    // Tambahkan komponen Image dengan SEO yang lebih baik
     if (!content.includes('class="article-image"')) {
       content = content.replace(
         /<\/h1>/,
-        `</h1>\n\n<div class="article-image">\n  <Image \n    src="/images/articles/thanksgiving/${fileNameWithoutExt}.png"\n    alt="${altText}"\n    width={735}\n    height={400}\n    class="hero-image"\n    loading="eager"\n    decoding="async"\n    title="${altText}"\n  />\n</div>\n`
+        `</h1>\n\n<div class="article-image">\n  <Image \n    src="/images/articles/thanksgiving/${fileName}.png"\n    alt="${altText}"\n    width={735}\n    height={400}\n    class="hero-image"\n    loading="eager"\n    decoding="async"\n    title="${altText}"\n  />\n</div>\n`
       );
     }
     
@@ -54,12 +50,11 @@ async function updateArticle(filePath) {
 
 async function main() {
   try {
-    const files = await fs.readdir(ARTICLES_DIR, { withFileTypes: true });
+    const files = await fs.readdir(ARTICLES_DIR);
+    const astroFiles = files.filter(f => f.endsWith('.astro'));
     
-    for (const file of files) {
-      if (file.isFile() && file.name.endsWith('.astro')) {
-        await updateArticle(path.join(ARTICLES_DIR, file.name));
-      }
+    for (const file of astroFiles) {
+      await updateArticle(path.join(ARTICLES_DIR, file));
     }
     
     console.log('All articles updated successfully!');

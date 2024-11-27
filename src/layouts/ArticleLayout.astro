@@ -3,6 +3,7 @@ import Layout from './Layout.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import SEOHead from '../components/SEOHead.astro';
 import JsonLd from '../components/JsonLd.astro';
+import { questions } from '../data/questions';
 
 interface Props {
   title: string;
@@ -18,7 +19,18 @@ interface Props {
     name: string;
     url?: string;
   };
-  image?: string;  // Tambahkan properti image
+  image?: string;
+  category?: string;
+}
+
+// Fungsi untuk mengacak array
+function shuffleArray(array: any[]) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
 }
 
 const { 
@@ -29,9 +41,10 @@ const {
   modifiedDate,
   author = {
     name: "People Also Ask",
-    url: "https://peoplealsoask.com/about"
+    url: "https://www.authormallorymccartney.com/about/"
   },
-  image = '/article-default.jpg'  // Default image jika tidak ada
+  image = '/article-default.jpg',
+  category = 'Condolence'
 } = Astro.props;
 
 const articleSchema = {
@@ -44,7 +57,7 @@ const articleSchema = {
   },
   datePublished: publishDate,
   dateModified: modifiedDate || publishDate,
-  image: image,  // Gunakan image dari props
+  image: image,
   publisher: {
     '@type': 'Organization',
     name: 'People Also Ask',
@@ -58,6 +71,14 @@ const articleSchema = {
     '@id': Astro.url.href
   }
 };
+
+// Get current article slug
+const currentSlug = Astro.url.pathname.split('/').pop();
+
+// Get related articles dengan pengacakan
+const relatedArticles = shuffleArray(
+  questions.filter(q => q.category === category && q.slug !== currentSlug)
+).slice(0, 4);
 ---
 
 <Layout>
@@ -120,14 +141,50 @@ const articleSchema = {
              class="share-button linkedin">
             Share on LinkedIn
           </a>
+          <a href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(Astro.url.href)}&description=${encodeURIComponent(title)}`}
+             target="_blank"
+             rel="noopener noreferrer"
+             class="share-button pinterest">
+            Share on Pinterest
+          </a>
+          <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(Astro.url.href)}`}
+             target="_blank"
+             rel="noopener noreferrer"
+             class="share-button facebook">
+            Share on Facebook
+          </a>
+          <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(title + ' ' + Astro.url.href)}`}
+             target="_blank"
+             rel="noopener noreferrer"
+             class="share-button whatsapp">
+            Share on WhatsApp
+          </a>
+          <a href={`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent('Check out this article: ' + Astro.url.href)}`}
+             class="share-button email">
+            Share via Email
+          </a>
         </div>
       </footer>
-    </article>
 
-    <aside class="related-articles">
-      <h2>Related Articles</h2>
-      <slot name="related" />
-    </aside>
+      {relatedArticles.length > 0 && (
+        <section class="related-articles">
+          <h2 class="related-title">Related Articles</h2>
+          <div class="related-grid">
+            {relatedArticles.map(article => (
+              <article class="related-card">
+                <div class="related-content">
+                  <span class="category-label">{article.category}</span>
+                  <h3>
+                    <a href={`/question/${article.slug}`}>{article.title}</a>
+                  </h3>
+                  <p>{article.description}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+    </article>
   </main>
 </Layout>
 
@@ -183,7 +240,9 @@ const articleSchema = {
 
   .share-buttons {
     display: flex;
-    gap: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: flex-start;
   }
 
   .share-button {
@@ -192,11 +251,15 @@ const articleSchema = {
     text-decoration: none;
     color: white;
     font-size: 0.875rem;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .share-button:hover {
     opacity: 0.9;
+    transform: translateY(-2px);
   }
 
   .twitter {
@@ -207,14 +270,83 @@ const articleSchema = {
     background: #0077B5;
   }
 
-  .related-articles {
-    margin-top: 3rem;
+  .pinterest {
+    background: #E60023;
   }
 
-  .related-articles h2 {
+  .facebook {
+    background: #1877F2;
+  }
+
+  .whatsapp {
+    background: #25D366;
+  }
+
+  .email {
+    background: #718096;
+  }
+
+  /* Related Articles Styles */
+  .related-articles {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .related-title {
     font-size: 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     color: #2d3748;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .related-card {
+    background: #f7fafc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+
+  .related-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .related-content {
+    padding: 1.5rem;
+  }
+
+  .category-label {
+    background: #e2e8f0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    color: #4a5568;
+  }
+
+  .related-content h3 {
+    margin: 1rem 0;
+    font-size: 1.25rem;
+  }
+
+  .related-content h3 a {
+    color: #2d3748;
+    text-decoration: none;
+  }
+
+  .related-content h3 a:hover {
+    color: var(--color-primary);
+  }
+
+  .related-content p {
+    color: #4a5568;
+    font-size: 0.875rem;
+    line-height: 1.5;
   }
 
   :global(.article-content h2) {
@@ -235,6 +367,21 @@ const articleSchema = {
     .article-meta {
       flex-direction: column;
       gap: 0.5rem;
+    }
+    
+    .share-buttons {
+      justify-content: flex-start;
+    }
+    
+    .share-button {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      flex: 1 1 auto;
+      justify-content: center;
+    }
+    
+    .related-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>

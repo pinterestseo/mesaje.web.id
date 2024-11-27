@@ -1,16 +1,34 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { questions } from '../data/questions';
+import Layout from '../../layouts/Layout.astro';
+import { questions } from '../../data/questions';
 
+export async function getStaticPaths() {
+  const POSTS_PER_PAGE = 10;
+  const totalPages = Math.ceil(questions.length / POSTS_PER_PAGE);
+  
+  return Array.from({ length: totalPages }, (_, i) => {
+    return {
+      params: { page: (i + 1).toString() },
+      props: { 
+        currentPage: i + 1,
+        totalPages,
+        questions 
+      },
+    };
+  });
+}
+
+const { currentPage, totalPages } = Astro.props;
 const categories = [...new Set(questions.map(q => q.category))];
 
 // Pagination Logic
 const POSTS_PER_PAGE = 10;
-const paginatedQuestions = questions.slice(0, POSTS_PER_PAGE);
-const totalPages = Math.ceil(questions.length / POSTS_PER_PAGE);
+const start = (currentPage - 1) * POSTS_PER_PAGE;
+const end = start + POSTS_PER_PAGE;
+const paginatedQuestions = questions.slice(start, end);
 ---
 
-<Layout title="Home">
+<Layout title={`Page ${currentPage} - Whispered Messages`}>
   <main>
     <header class="hero">
       <div class="container">
@@ -48,12 +66,18 @@ const totalPages = Math.ceil(questions.length / POSTS_PER_PAGE);
 
       <!-- Pagination Controls -->
       <nav class="pagination">
+        {currentPage > 1 && (
+          <a href={currentPage === 2 ? '/' : `/page/${currentPage - 1}`} class="page-link">
+            ← Previous
+          </a>
+        )}
+        
         <span class="page-info">
-          Page 1 of {totalPages}
+          Page {currentPage} of {totalPages}
         </span>
         
-        {totalPages > 1 && (
-          <a href="/page/2" class="page-link">
+        {currentPage < totalPages && (
+          <a href={`/page/${currentPage + 1}`} class="page-link">
             Next →
           </a>
         )}
