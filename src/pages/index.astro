@@ -14,13 +14,13 @@ const totalPages = Math.ceil(questions.length / POSTS_PER_PAGE);
   <main>
     <header class="hero">
       <div class="container">
-        <h1>Whispered Messages</h1>
-        <p class="subtitle">Gentle words that touch hearts & heal minds</p>
+        <h1>Mesaje șoptite</h1>
+        <p class="subtitle">Cuvinte blânde care ating inimile și vindecă mințile</p>
       </div>
     </header>
 
     <section class="categories container">
-      <h2>Browse by Category</h2>
+      <h2>Răsfoiți după Categorie</h2>
       <div class="category-list">
         {categories.map(category => (
           <a href={`/category/${category.toLowerCase()}`} class="category-tag">
@@ -31,7 +31,7 @@ const totalPages = Math.ceil(questions.length / POSTS_PER_PAGE);
     </section>
 
     <section class="questions container">
-      <h2>Popular Questions</h2>
+      <h2>Mesaje Populare</h2>
       <div class="question-grid">
         {paginatedQuestions.map(question => (
           <article class="question-card">
