@@ -40,8 +40,8 @@ const {
   publishDate = new Date().toISOString(),
   modifiedDate,
   author = {
-    name: "Mesaje La Multi Ani",
-    url: "https://mesajelamultiani.netlify.app/about/"
+    name: "Mesaje",
+    url: "https://mesaje.web.id/about/"
   },
   image = '/article-default.jpg',
   category = 'Condolence'
@@ -60,7 +60,7 @@ const articleSchema = {
   image: image,
   publisher: {
     '@type': 'Organization',
-    name: 'People Also Ask',
+    name: 'Toate Mesajele Frumoase',
     logo: {
       '@type': 'ImageObject',
       url: '/logo.png'
@@ -81,7 +81,7 @@ const relatedArticles = shuffleArray(
 ).slice(0, 4);
 ---
 
-<Layout>
+<Layout title={title}>
   <SEOHead
     title={title}
     description={description}
@@ -168,7 +168,7 @@ const relatedArticles = shuffleArray(
 
       {relatedArticles.length > 0 && (
         <section class="related-articles">
-          <h2 class="related-title">Related Articles</h2>
+          <h2 class="related-title">Articole Aferente</h2>
           <div class="related-grid">
             {relatedArticles.map(article => (
               <article class="related-card">

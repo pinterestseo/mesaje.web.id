@@ -9,7 +9,7 @@ export async function GET() {
       '/popular',
       '/category'
     ].map((path) => ({
-      loc: `https://mesajelamultiani.netlify.app${path}`,
+      loc: `https://mesaje.web.id${path}`,
       lastmod: new Date().toISOString(),
       changefreq: 'weekly',
       priority: path === '' ? '1.0' : '0.8'
@@ -20,7 +20,7 @@ export async function GET() {
 
     // Generate URL untuk kategori
     const categoryPages = categories.map((category) => ({
-      loc: `https://mesajelamultiani.netlify.app/category/${category.toLowerCase()}`,
+      loc: `https://mesaje.web.id/category/${category.toLowerCase()}`,
       lastmod: new Date().toISOString(),
       changefreq: 'weekly',
       priority: '0.7'
@@ -28,7 +28,7 @@ export async function GET() {
 
     // Generate URL untuk semua questions/posts
     const questionPages = questions.map((question) => ({
-      loc: `https://mesajelamultiani.netlify.app/question/${question.slug}`,
+      loc: `https://mesaje.web.id/question/${question.slug}`,
       lastmod: new Date().toISOString(),
       changefreq: 'weekly',
       priority: '0.7'

@@ -3,7 +3,7 @@ import sitemap from '@astrojs/sitemap';
 import compress from 'astro-compress';
 
 export default defineConfig({
-  site: 'https://www.authormallorymccartney.com',
+  site: 'https://mesaje.web.id',
   integrations: [
     sitemap({
       filter: (page) => !page.includes('404'),

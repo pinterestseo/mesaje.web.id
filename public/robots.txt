@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mesajelamultiani.netlify.app/sitemap.xml
+Sitemap: https://mesaje.web.id/sitemap.xml
